@@ -1,4 +1,4 @@
-package com.mice.gateways;
+package com.mice.gateways.domain;
 
 import com.openpojo.reflection.PojoClass;
 import com.openpojo.reflection.PojoClassFilter;
