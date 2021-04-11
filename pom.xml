@@ -18,6 +18,7 @@
         <org.mapstruct.version>1.4.2.Final</org.mapstruct.version>
         <com.openpojo.version>0.8.13</com.openpojo.version>
         <io.springfox.version>3.0.0</io.springfox.version>
+        <com.tngtech.archunit.version>0.14.1</com.tngtech.archunit.version>
     </properties>
     <dependencies>
         <dependency>
@@ -68,6 +69,12 @@
             <artifactId>mapstruct</artifactId>
             <version>${org.mapstruct.version}</version>
         </dependency>
+        <dependency>
+        <groupId>com.tngtech.archunit</groupId>
+        <artifactId>archunit-junit5</artifactId>
+        <version>${com.tngtech.archunit.version}</version>
+        <scope>test</scope>
+    </dependency>
     </dependencies>
 
     <build>
