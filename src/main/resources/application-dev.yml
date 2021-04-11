@@ -1,0 +1,21 @@
+spring:
+  h2:
+    console:
+      settings:
+        trace: true
+        web-allow-others: true
+  main:
+    allow-bean-definition-overriding: true
+
+  datasource:
+    url: jdbc:h2:file:./target/h2db/db/gateway;DB_CLOSE_DELAY=-1
+    driverClassName: org.h2.Driver
+    username: gateways
+    password:
+
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+

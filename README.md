@@ -7,9 +7,4 @@ Basically it contains:
 
 2: Spring DATA JPA.
 
-3: Testing with [Junit5](https://junit.org/junit5/), [Mockito](https://site.mockito.org/), [ArchUnit](https://www.archunit.org/), [OpenPojo](https://github.com/OpenPojo/openpojo)
-
-4: Mapping with [Mapstruct](https://mapstruct.org/)
-
-5: API Documentation with [Swagger](https://swagger.io/) 
-
+3: H2 Database
