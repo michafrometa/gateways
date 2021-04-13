@@ -1,7 +1,9 @@
 package com.mice.gateways.web.rest;
 
 import com.mice.gateways.service.GatewayService;
+import com.mice.gateways.service.PeripheralService;
 import com.mice.gateways.service.dto.GatewayDTO;
+import com.mice.gateways.service.dto.peripheral.PeripheralDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -30,13 +32,17 @@ public class GatewayResource {
 
     private final GatewayService gatewayService;
 
+    private final PeripheralService peripheralService;
+
     /**
      * Instantiates a new Gateway resource.
      *
      * @param gatewayService the gateway service
      */
-    public GatewayResource(GatewayService gatewayService) {
+    public GatewayResource(GatewayService gatewayService,
+                           PeripheralService peripheralService) {
         this.gatewayService = gatewayService;
+        this.peripheralService = peripheralService;
     }
 
     /**
@@ -112,5 +118,25 @@ public class GatewayResource {
         log.debug("REST request to delete a " + ENTITY_NAME + " : {}", id);
         gatewayService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Adds a peripheral to a gateway
+     *
+     * @param id            the id of the GatewayDTO to retrieve.
+     * @param peripheralDTO the peripheral dto
+     * @return the response entity
+     */
+    @PostMapping("/{id}/peripherals")
+    public ResponseEntity<PeripheralDTO> addPeripheral(@PathVariable(value = "id") Long id,
+                                                       @Valid @RequestBody PeripheralDTO peripheralDTO) {
+        return gatewayService.findOne(id)
+                .map(gatewayDTO -> {
+                    peripheralDTO.setGatewayId(id);
+                    return peripheralService.save(peripheralDTO);
+                })
+                .map(ResponseEntity::ok)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
     }
 }

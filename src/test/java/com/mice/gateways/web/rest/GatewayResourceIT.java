@@ -2,13 +2,18 @@ package com.mice.gateways.web.rest;
 
 import com.mice.gateways.GatewaysApplication;
 import com.mice.gateways.base.GatewayTestBase;
+import com.mice.gateways.base.PeripheralTestBase;
 import com.mice.gateways.domain.Gateway;
+import com.mice.gateways.domain.Peripheral;
 import com.mice.gateways.repository.GatewayRepository;
+import com.mice.gateways.repository.PeripheralRepository;
 import com.mice.gateways.service.GatewayService;
+import com.mice.gateways.service.PeripheralService;
 import com.mice.gateways.service.dto.GatewayDTO;
+import com.mice.gateways.service.dto.peripheral.PeripheralDTO;
 import com.mice.gateways.service.mapper.GatewayMapper;
+import com.mice.gateways.service.mapper.peripheral.PeripheralMapper;
 import com.mice.gateways.util.TestUtil;
-import org.h2.jdbc.JdbcSQLIntegrityConstraintViolationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,6 +22,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,10 +49,19 @@ class GatewayResourceIT {
     private GatewayRepository gatewayRepository;
 
     @Autowired
+    private PeripheralRepository peripheralRepository;
+
+    @Autowired
     private GatewayService gatewayService;
 
     @Autowired
+    private PeripheralService peripheralService;
+
+    @Autowired
     private GatewayMapper gatewayMapper;
+
+    @Autowired
+    private PeripheralMapper peripheralMapper;
 
     @Autowired
     private EntityManager em;
@@ -66,6 +82,7 @@ class GatewayResourceIT {
         int databaseSizeBeforeCreate = gatewayRepository.findAll().size();
         // Create the Gateway
         GatewayDTO gatewayDTO = gatewayMapper.toDto(gateway);
+
         restGatewayMockMvc.perform(post("/api/gateways")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(TestUtil.convertObjectToJsonBytes(gatewayDTO)))
@@ -77,7 +94,6 @@ class GatewayResourceIT {
         Gateway testGateway = gatewayList.get(gatewayList.size() - 1);
         assertEquals(GatewayTestBase.DEFAULT_NAME, testGateway.getName());
         assertEquals(GatewayTestBase.DEFAULT_ADDRESS, testGateway.getAddress());
-        assertEquals(GatewayTestBase.DEFAULT_SERIAL_NUMBER, testGateway.getSerialNumber());
     }
 
     @Test
@@ -100,37 +116,6 @@ class GatewayResourceIT {
         assertEquals(gatewayList.size(), databaseSizeBeforeCreate);
     }
 
-    @Test
-    @Transactional
-    @DisplayName("Create Gateway With Existing Serial Number Should Fail")
-    void createGatewayWithExistingSerialNumberShouldFail() {
-        // Initialize the database
-        gatewayRepository.saveAndFlush(gateway);
-
-        Gateway duplicatedSerialGateway = GatewayTestBase.createUpdatedEntity();
-        duplicatedSerialGateway.setSerialNumber(gateway.getSerialNumber());
-
-        // Create the Gateway
-        GatewayDTO gatewayDTO = gatewayMapper.toDto(duplicatedSerialGateway);
-
-        // An entity with an existing Serial Number cannot be created, so this API call must throw an Exception
-        assertThrows(NestedServletException.class, () -> restGatewayMockMvc.perform(post("/api/gateways")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(gatewayDTO))));
-
-        /*
-         * Due to issues loading message.properties file i am going to bypass the fine grained
-         * assertion for Exception message
-         * it should be like:
-         * Exception exception = assertThrows(NestedServletException.class, () -> restGatewayMockMvc.perform(post("/api/gateways")
-         *     .contentType(MediaType.APPLICATION_JSON)
-         *     .content(TestUtil.convertObjectToJsonBytes(gatewayDTO))));
-         *
-         * String expectedMessage = "Unique constraint violated";
-         * String actualMessage = exception.getMessage();
-         * But for now, as i am only waiting for a single Exception, so i believe it is enough.
-         */
-    }
 
     @Test
     @Transactional
@@ -144,7 +129,6 @@ class GatewayResourceIT {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(jsonPath("$.[*].id").value(hasItem(gateway.getId().intValue())))
                 .andExpect(jsonPath("$.[*].name").value(hasItem(GatewayTestBase.DEFAULT_NAME)))
-                .andExpect(jsonPath("$.[*].serialNumber").value(GatewayTestBase.DEFAULT_SERIAL_NUMBER))
                 .andExpect(jsonPath("$.[*].address").value(GatewayTestBase.DEFAULT_ADDRESS));
     }
 
@@ -160,7 +144,6 @@ class GatewayResourceIT {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(jsonPath("$.id").value(gateway.getId().intValue()))
                 .andExpect(jsonPath("$.name").value(GatewayTestBase.DEFAULT_NAME))
-                .andExpect(jsonPath("$.serialNumber").value(GatewayTestBase.DEFAULT_SERIAL_NUMBER))
                 .andExpect(jsonPath("$.address").value(GatewayTestBase.DEFAULT_ADDRESS));
     }
 
@@ -239,5 +222,30 @@ class GatewayResourceIT {
         // Validate the database contains one less item
         List<Gateway> gatewayList = gatewayRepository.findAll();
         assertEquals(gatewayList.size(), databaseSizeBeforeDelete - 1);
+    }
+
+    @Test
+    @DisplayName("Test Add Peripheral to a Gateway")
+    void testAddPeripheralToAGateway() throws Exception {
+        // Initialize the database
+        gatewayRepository.saveAndFlush(gateway);
+
+        final PageRequest pageable = PageRequest.of(0, 10);
+
+        long databaseSizeBeforeCreate = peripheralRepository.findByGatewayId(gateway.getId(), pageable).getTotalElements();
+
+        // Create the Peripheral
+        Peripheral peripheral = PeripheralTestBase.createEntity();
+
+        PeripheralDTO peripheralDTO = peripheralMapper.toDto(peripheral);
+
+        restGatewayMockMvc.perform(post("/api/gateways/{id}/peripherals", gateway.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(TestUtil.convertObjectToJsonBytes(peripheralDTO)))
+                .andExpect(status().isOk());
+
+        // Validate the Gateway in the database
+        Page<Peripheral> gatewayPeripherals = peripheralRepository.findByGatewayId(gateway.getId(), pageable);
+        assertEquals(gatewayPeripherals.getTotalElements(), databaseSizeBeforeCreate + 1);
     }
 }

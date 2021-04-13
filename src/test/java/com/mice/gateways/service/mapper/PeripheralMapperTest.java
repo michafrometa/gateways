@@ -1,5 +1,7 @@
 package com.mice.gateways.service.mapper;
 
+import com.mice.gateways.service.mapper.peripheral.PeripheralMapper;
+import com.mice.gateways.service.mapper.peripheral.PeripheralMapperImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

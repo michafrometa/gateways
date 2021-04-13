@@ -1,7 +1,8 @@
 package com.mice.gateways.web.rest;
 
 import com.mice.gateways.service.PeripheralService;
-import com.mice.gateways.service.dto.PeripheralDTO;
+import com.mice.gateways.service.dto.peripheral.PeripheralDTO;
+import com.mice.gateways.service.dto.peripheral.PeripheralOnlyGatewayDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -89,6 +90,19 @@ public class PeripheralResource {
     }
 
     /**
+     * Gets all peripherals.
+     *
+     * @param pageable the pageable
+     * @return the all peripherals
+     */
+    @GetMapping(params = "gateway")
+    public ResponseEntity<List<PeripheralDTO>> getPeripheralsByGateway(@RequestParam Long gateway, Pageable pageable) {
+        log.debug("REST request to get a page of " + ENTITY_NAME);
+        Page<PeripheralDTO> page = peripheralService.findByGateway(gateway, pageable);
+        return ResponseEntity.ok().body(page.getContent());
+    }
+
+    /**
      * {@code GET  /:id} : : get the "id" peripheral.
      *
      * @param id the id of the PeripheralDTO to retrieve.
@@ -113,5 +127,24 @@ public class PeripheralResource {
         log.debug("REST request to delete a " + ENTITY_NAME + " : {}", id);
         peripheralService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Delete peripheral response entity.
+     *
+     * @param id the id
+     * @return the response entity
+     */
+    @PatchMapping("/{id}/setGateway")
+    public ResponseEntity<Object> setGateway(
+            @Valid @RequestBody PeripheralOnlyGatewayDTO peripheralOnlyGatewayDTO,
+            @PathVariable("id") UUID id) {
+        return peripheralService.findOne(id)
+                .map(peripheralDTO -> {
+                    peripheralDTO.setGatewayId(peripheralOnlyGatewayDTO.getGatewayId());
+                    return peripheralService.save(peripheralDTO);
+                })
+                .map(response -> ResponseEntity.noContent().build())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 }

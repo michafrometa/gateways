@@ -1,22 +1,30 @@
 package com.mice.gateways.web.rest;
 
 import com.mice.gateways.GatewaysApplication;
+import com.mice.gateways.base.GatewayTestBase;
 import com.mice.gateways.base.PeripheralTestBase;
+import com.mice.gateways.domain.Gateway;
 import com.mice.gateways.domain.Peripheral;
 import com.mice.gateways.domain.enumeration.Status;
+import com.mice.gateways.repository.GatewayRepository;
 import com.mice.gateways.repository.PeripheralRepository;
 import com.mice.gateways.service.PeripheralService;
-import com.mice.gateways.service.dto.PeripheralDTO;
-import com.mice.gateways.service.mapper.PeripheralMapper;
+import com.mice.gateways.service.dto.peripheral.PeripheralDTO;
+import com.mice.gateways.service.dto.peripheral.PeripheralOnlyGatewayDTO;
+import com.mice.gateways.service.mapper.GatewayMapper;
+import com.mice.gateways.service.mapper.peripheral.PeripheralMapper;
 import com.mice.gateways.util.TestUtil;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,6 +57,12 @@ class PeripheralResourceIT {
 
     @Autowired
     private PeripheralMapper peripheralMapper;
+
+    @Autowired
+    private GatewayRepository gatewayRepository;
+
+    @Autowired
+    private GatewayMapper gatewayMapper;
 
     @Autowired
     private EntityManager em;
@@ -221,5 +235,34 @@ class PeripheralResourceIT {
         Peripheral persistedPeripheral = peripheralRepository.findById(peripheral.getId()).orElseThrow(EntityNotFoundException::new);
 
         Assertions.assertEquals(Status.ONLINE, persistedPeripheral.getStatus());
+    }
+
+    @Test
+    @DisplayName("Test Detach from Gateway")
+    void testDetachFromGateway() throws Exception {
+
+        // Create the Gateway
+        Gateway gateway = GatewayTestBase.createEntity();
+
+        // Initialize the database
+        peripheralRepository.saveAndFlush(peripheral);
+        gatewayRepository.saveAndFlush(gateway);
+
+        final PageRequest pageable = PageRequest.of(0, 10);
+
+        long databaseSizeBeforeCreate = peripheralRepository.findByGatewayId(gateway.getId(), pageable).getTotalElements();
+
+        peripheral.setGateway(gateway);
+
+        PeripheralOnlyGatewayDTO peripheralDTO = peripheralMapper.toPeripheralOnlyGatewayDTO(peripheral);
+
+        restPeripheralMockMvc.perform(patch("/api/peripherals/{id}/setGateway", peripheralDTO.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(TestUtil.convertObjectToJsonBytes(peripheralDTO)))
+                .andExpect(status().isNoContent());
+
+        // Validate the Gateway in the database
+        Page<Peripheral> gatewayPeripherals = peripheralRepository.findByGatewayId(gateway.getId(), pageable);
+        assertEquals(gatewayPeripherals.getTotalElements(), databaseSizeBeforeCreate + 1);
     }
 }

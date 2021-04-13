@@ -27,7 +27,8 @@ public class GatewayTestBase {
     public static Gateway createEntity() {
         return new Gateway()
                 .name(DEFAULT_NAME)
-                .serialNumber(DEFAULT_SERIAL_NUMBER)
+                //.serialNumber(DEFAULT_SERIAL_NUMBER)
+                //.serialNumber(UUID.randomUUID().toString())
                 .address(DEFAULT_ADDRESS);
     }
 
@@ -40,7 +41,7 @@ public class GatewayTestBase {
     public static Gateway createUpdatedEntity() {
         return new Gateway()
                 .name(UPDATED_NAME)
-                .serialNumber(UPDATED_SERIAL_NUMBER)
+                //.serialNumber(UPDATED_SERIAL_NUMBER)
                 .address(UPDATED_ADDRESS);
     }
 }

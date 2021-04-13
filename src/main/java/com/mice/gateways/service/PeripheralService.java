@@ -2,8 +2,8 @@ package com.mice.gateways.service;
 
 import com.mice.gateways.domain.Peripheral;
 import com.mice.gateways.repository.PeripheralRepository;
-import com.mice.gateways.service.dto.PeripheralDTO;
-import com.mice.gateways.service.mapper.PeripheralMapper;
+import com.mice.gateways.service.dto.peripheral.PeripheralDTO;
+import com.mice.gateways.service.mapper.peripheral.PeripheralMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -24,7 +24,8 @@ public class PeripheralService {
 
     private final PeripheralMapper peripheralMapper;
 
-    public PeripheralService(PeripheralRepository peripheralRepository, PeripheralMapper peripheralMapper) {
+    public PeripheralService(PeripheralRepository peripheralRepository,
+                             PeripheralMapper peripheralMapper) {
         this.peripheralRepository = peripheralRepository;
         this.peripheralMapper = peripheralMapper;
     }
@@ -42,6 +43,12 @@ public class PeripheralService {
                 .map(peripheralMapper::toDto);
     }
 
+    public Page<PeripheralDTO> findByGateway(Long gatewayId, Pageable pageable) {
+        log.debug("Request to get all Peripherals from a Gateway");
+        return peripheralRepository.findByGatewayId(gatewayId, pageable)
+                .map(peripheralMapper::toDto);
+    }
+
     public Optional<PeripheralDTO> findOne(UUID id) {
         return this.peripheralRepository.findById(id)
                 .map(peripheralMapper::toDto);
@@ -50,4 +57,5 @@ public class PeripheralService {
     public void delete(UUID id) {
         this.peripheralRepository.deleteById(id);
     }
+
 }

@@ -1,4 +1,4 @@
-package com.mice.gateways.service.dto;
+package com.mice.gateways.service.dto.peripheral;
 
 import com.mice.gateways.domain.enumeration.Status;
 import com.openpojo.business.BusinessIdentity;

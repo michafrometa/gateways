@@ -1,8 +1,11 @@
-package com.mice.gateways.service.mapper;
+package com.mice.gateways.service.mapper.peripheral;
 
 
 import com.mice.gateways.domain.Peripheral;
-import com.mice.gateways.service.dto.PeripheralDTO;
+import com.mice.gateways.service.dto.peripheral.PeripheralDTO;
+import com.mice.gateways.service.dto.peripheral.PeripheralOnlyGatewayDTO;
+import com.mice.gateways.service.mapper.EntityMapper;
+import com.mice.gateways.service.mapper.GatewayMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -12,13 +15,20 @@ import java.util.UUID;
 /**
  * Mapper for the entity {@link Peripheral} and its DTO {@link PeripheralDTO}.
  */
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {GatewayMapper.class})
 public interface PeripheralMapper extends EntityMapper<PeripheralDTO, Peripheral> {
 
-    @Mapping(target = "gateway", ignore = true)
+    @Mapping(source = "gatewayId", target = "gateway")
     Peripheral toEntity(PeripheralDTO peripheral);
 
+    @Mapping(source = "gatewayId", target = "gateway")
+    Peripheral toEntity(PeripheralOnlyGatewayDTO peripheral);
+
+    @Mapping(source = "gateway.id", target = "gatewayId")
     PeripheralDTO toDto(Peripheral peripheral);
+
+    @Mapping(source = "gateway.id", target = "gatewayId")
+    PeripheralOnlyGatewayDTO toPeripheralOnlyGatewayDTO (Peripheral peripheral);
 
     List<Peripheral> toEntity(List<PeripheralDTO> dtoList);
 

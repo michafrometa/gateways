@@ -10,7 +10,7 @@ import java.util.List;
  * Mapper for the entity {@link Gateway} and its DTO {@link GatewayDTO}.
  */
 @Mapper(componentModel = "spring")
-public interface GatewayMapper extends com.mice.gateways.service.mapper.EntityMapper<GatewayDTO, Gateway> {
+public interface GatewayMapper extends EntityMapper<GatewayDTO, Gateway> {
 
     Gateway toEntity(GatewayDTO gatewayDTO);
 
