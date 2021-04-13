@@ -9,7 +9,6 @@ import com.openpojo.validation.Validator;
 import com.openpojo.validation.ValidatorBuilder;
 import com.openpojo.validation.rule.impl.*;
 import com.openpojo.validation.test.impl.BusinessIdentityTester;
-import com.openpojo.validation.test.impl.DefaultValuesNullTester;
 import com.openpojo.validation.test.impl.GetterTester;
 import com.openpojo.validation.test.impl.SetterTester;
 import org.junit.jupiter.api.BeforeAll;
@@ -78,7 +77,7 @@ class OpenPojoTest {
                 .with(new GetterTester())
 
                 // We don't want any default values to any fields - unless they are declared final or are primitive.
-                .with(new DefaultValuesNullTester())
+                // .with(new DefaultValuesNullTester())
 
                 // Equals, Hashcode and To String are behaving as expected.
                 .with(new BusinessIdentityTester())

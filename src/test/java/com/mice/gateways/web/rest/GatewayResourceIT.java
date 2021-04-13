@@ -7,8 +7,6 @@ import com.mice.gateways.domain.Gateway;
 import com.mice.gateways.domain.Peripheral;
 import com.mice.gateways.repository.GatewayRepository;
 import com.mice.gateways.repository.PeripheralRepository;
-import com.mice.gateways.service.GatewayService;
-import com.mice.gateways.service.PeripheralService;
 import com.mice.gateways.service.dto.GatewayDTO;
 import com.mice.gateways.service.dto.peripheral.PeripheralDTO;
 import com.mice.gateways.service.mapper.GatewayMapper;
@@ -30,10 +28,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.NestedServletException;
 
 import javax.persistence.EntityManager;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.hamcrest.Matchers.hasItem;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -50,12 +51,6 @@ class GatewayResourceIT {
 
     @Autowired
     private PeripheralRepository peripheralRepository;
-
-    @Autowired
-    private GatewayService gatewayService;
-
-    @Autowired
-    private PeripheralService peripheralService;
 
     @Autowired
     private GatewayMapper gatewayMapper;
@@ -247,5 +242,32 @@ class GatewayResourceIT {
         // Validate the Gateway in the database
         Page<Peripheral> gatewayPeripherals = peripheralRepository.findByGatewayId(gateway.getId(), pageable);
         assertEquals(gatewayPeripherals.getTotalElements(), databaseSizeBeforeCreate + 1);
+    }
+
+    @Test
+    @DisplayName("Add more Peripherals than max size(10) should Fail")
+    void addMorePeripheralsThanMaxSizeShouldFail() {
+        int databaseSizeBeforeCreate = gatewayRepository.findAll().size();
+
+        Set<Peripheral> peripherals = new HashSet<>();
+
+        for (int i = 0; i < 11; i++) {
+            Peripheral peripheral = PeripheralTestBase.createEntity();
+            /*To be sure creating different peripherals as Set shrinks duplicated elements*/
+            peripheral.setVendor("vendor_" + i);
+
+            peripheral.setStatus(PeripheralTestBase.DEFAULT_STATUS);
+
+            peripherals.add(peripheral);
+        }
+        gateway.setPeripherals(peripherals);
+        // Exception ex = assertThrows(ConstraintViolationException.class, () -> restGatewayMockMvc.perform(post("/api/gateways")
+        Exception ex = assertThrows(NestedServletException.class, () -> restGatewayMockMvc.perform(post("/api/gateways")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(TestUtil.convertObjectToJsonBytes(gatewayMapper.toDto(gateway)))));
+
+
+        // Validate the Gateway in the database
+        assertEquals(gatewayRepository.findAll().size(), databaseSizeBeforeCreate);
     }
 }
