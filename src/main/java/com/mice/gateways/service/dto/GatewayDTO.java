@@ -1,10 +1,13 @@
 package com.mice.gateways.service.dto;
 
+import com.mice.gateways.domain.Peripheral;
 import com.openpojo.business.BusinessIdentity;
 import com.openpojo.business.annotation.BusinessKey;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 public class GatewayDTO implements Serializable {
 
@@ -24,6 +27,8 @@ public class GatewayDTO implements Serializable {
     @BusinessKey(composite = true, required = false)
     @ApiModelProperty(example = "192.168.20.2")
     private String address;
+
+    private Set<Peripheral> peripherals = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -55,6 +60,14 @@ public class GatewayDTO implements Serializable {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public Set<Peripheral> getPeripherals() {
+        return peripherals;
+    }
+
+    public void setPeripherals(Set<Peripheral> peripherals) {
+        this.peripherals = peripherals;
     }
 
     /**

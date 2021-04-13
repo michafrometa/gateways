@@ -1,5 +1,6 @@
 package com.mice.gateways.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.mice.gateways.domain.enumeration.Status;
 import com.openpojo.business.BusinessIdentity;
 import com.openpojo.business.annotation.BusinessKey;
@@ -38,6 +39,7 @@ public class Peripheral implements Serializable {
     private Status status;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value = "peripherals", allowSetters = true)
     private Gateway gateway;
 
     public UUID getId() {

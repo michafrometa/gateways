@@ -5,7 +5,10 @@ import com.openpojo.business.annotation.BusinessKey;
 
 import javax.persistence.*;
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A gateway
@@ -29,6 +32,10 @@ public class Gateway implements Serializable {
     @Pattern(regexp = "^([0-1]?\\d?\\d|2[0-4]\\d|25[0-5])(\\.([0-1]?\\d?\\d|2[0-4]\\d|25[0-5])){3}$")
     @BusinessKey(composite = true, required = false)
     private String address;
+
+    @OneToMany(mappedBy = "gateway", cascade = CascadeType.PERSIST)
+    @Size(max = 10)
+    private Set<Peripheral> peripherals = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -75,6 +82,31 @@ public class Gateway implements Serializable {
     public Gateway address(String address) {
         this.address = address;
         return this;
+    }
+
+    public Set<Peripheral> getPeripherals() {
+        return peripherals;
+    }
+
+    public Gateway peripherals(Set<Peripheral> peripherals) {
+        this.peripherals = peripherals;
+        return this;
+    }
+
+    public Gateway addPeripheral(Peripheral peripheral) {
+        this.peripherals.add(peripheral);
+        peripheral.setGateway(this);
+        return this;
+    }
+
+    public Gateway removePeripheral(Peripheral peripheral) {
+        this.peripherals.remove(peripheral);
+        peripheral.setGateway(null);
+        return this;
+    }
+
+    public void setPeripherals(Set<Peripheral> peripherals) {
+        this.peripherals = peripherals;
     }
 
     /**

@@ -18,14 +18,15 @@ import java.util.UUID;
 @Mapper(componentModel = "spring", uses = {GatewayMapper.class})
 public interface PeripheralMapper extends EntityMapper<PeripheralDTO, Peripheral> {
 
+    @Mapping(source = "gateway.id", target = "gatewayId")
+    PeripheralDTO toDto(Peripheral peripheral);
+
     @Mapping(source = "gatewayId", target = "gateway")
     Peripheral toEntity(PeripheralDTO peripheral);
 
     @Mapping(source = "gatewayId", target = "gateway")
     Peripheral toEntity(PeripheralOnlyGatewayDTO peripheral);
 
-    @Mapping(source = "gateway.id", target = "gatewayId")
-    PeripheralDTO toDto(Peripheral peripheral);
 
     @Mapping(source = "gateway.id", target = "gatewayId")
     PeripheralOnlyGatewayDTO toPeripheralOnlyGatewayDTO (Peripheral peripheral);

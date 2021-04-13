@@ -129,7 +129,7 @@ class PeripheralResourceIT {
         restPeripheralMockMvc.perform(get("/api/peripherals?sort=id,desc"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(jsonPath("$.[*].id").value(hasItem(peripheral.getId().toString()/*.intValue()*/)))
+                .andExpect(jsonPath("$.[*].id").value(hasItem(peripheral.getId().toString())))
                 .andExpect(jsonPath("$.[*].vendor").value(hasItem(PeripheralTestBase.DEFAULT_VENDOR)))
                 .andExpect(jsonPath("$.[*].status").value(hasItem(PeripheralTestBase.DEFAULT_STATUS.toString())));
     }
