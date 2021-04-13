@@ -3,6 +3,7 @@ package com.mice.gateways.domain;
 import com.mice.gateways.domain.enumeration.Status;
 import com.openpojo.business.BusinessIdentity;
 import com.openpojo.business.annotation.BusinessKey;
+import io.swagger.annotations.ApiModelProperty;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -25,6 +26,7 @@ public class Peripheral implements Serializable {
     private UUID id;
 
     @BusinessKey(composite = true, required = false)
+    @ApiModelProperty(example = "Principal Building")
     private String vendor;
 
     @CreatedDate
@@ -32,6 +34,7 @@ public class Peripheral implements Serializable {
     private Long createdDate;
 
     @BusinessKey(composite = true, required = false)
+    @ApiModelProperty(example = "ONLINE")
     private Status status;
 
     @ManyToOne(fetch = FetchType.LAZY)

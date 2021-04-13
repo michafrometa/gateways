@@ -3,6 +3,7 @@ package com.mice.gateways.service.dto.peripheral;
 import com.mice.gateways.domain.enumeration.Status;
 import com.openpojo.business.BusinessIdentity;
 import com.openpojo.business.annotation.BusinessKey;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
 import java.util.UUID;
@@ -11,16 +12,21 @@ public class PeripheralDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @ApiModelProperty(hidden = true)
     private UUID id;
 
     @BusinessKey(composite = true, required = false)
+    @ApiModelProperty(example = "Musala Soft")
     private String vendor;
 
+    @ApiModelProperty(hidden = true)
     private Long createdDate;
 
     @BusinessKey(composite = true, required = false)
+    @ApiModelProperty(example = "ONLINE")
     private Status status;
 
+    @ApiModelProperty(hidden = true)
     private Long gatewayId;
 
     public Status getStatus() {

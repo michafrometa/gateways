@@ -2,6 +2,7 @@ package com.mice.gateways.service.dto;
 
 import com.openpojo.business.BusinessIdentity;
 import com.openpojo.business.annotation.BusinessKey;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
 
@@ -9,15 +10,19 @@ public class GatewayDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @ApiModelProperty(hidden = true)
     private Long id;
 
     @BusinessKey(composite = true, required = false)
+    @ApiModelProperty(example = "123456")
     private String serialNumber;
 
     @BusinessKey(composite = true, required = false)
+    @ApiModelProperty(example = "Backbone")
     private String name;
 
     @BusinessKey(composite = true, required = false)
+    @ApiModelProperty(example = "192.168.20.2")
     private String address;
 
     public Long getId() {
