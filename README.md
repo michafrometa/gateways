@@ -7,4 +7,6 @@ Basically it contains:
 
 2: Spring DATA JPA.
 
+3: OpenApi
+
 3: H2 Database
