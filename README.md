@@ -79,7 +79,7 @@ Open a terminal and get to the extracted folder and run:
 
 ![Update gateway](/docs/put_gateways.png)
 
--Delete gateway
+- Delete gateway
 
         DELETE http://localhost:8080/api/gateways/{gatewayId}
 
