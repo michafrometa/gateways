@@ -15,108 +15,111 @@ Is basically made with:
 5: Java 11 and Maven 
 
 
-### Installation and run
+## Installation and run
 Clone the repo and extract
 
 Open a terminal and get to the extracted folder and run:
 
     ./mvnw spring-boot:run
 
+##Testing API with Postman
 
-Testing API with Postman:
+### Gateways
 
-#### Gateways
-##### ![Get all gateways](/docs/get_gateways.png)
+- Get all gateways
 
-Request
+            GET http://localhost:8080/api/gateways
 
-    GET http://localhost:8080/api/gateways
+![Get all gateways](/docs/get_gateways.png)
 
-##### ![Create gateway](/docs/post_gateways.png)
-Request
+- Create gateway
 
-    POST http://localhost:8080/api/gateways
+        POST http://localhost:8080/api/gateways
 
-Request body:
+        Request body:
+        {
+            "serialNumber": "ssss",
+            "name": "name",
+            "address": "15.2.5.45"
+        }
 
-    {
-        "serialNumber": "ssss",
-        "name": "name",
-        "address": "15.2.5.45"
-    }
-##### ![Create gateway with peripherals](/docs/post_gateways_with_peripherals.png)
+![Create gateway](/docs/post_gateways.png)
 
-Request
-        
-    POST http://localhost:8080/api/gateways
+- Create gateway with peripherals
 
-Request body:
+        POST http://localhost:8080/api/gateways
 
-    {
-        "serialNumber": "ssss",
-        "name": "name",
-        "address": "15.2.5.45",
-        "peripherals": [
-            {
-            "vendor": "vendor 1",
-            "status": "OFFLINE"
-            }
-        ]
-    }
+        Request body:
+        {
+            "serialNumber": "ssss",
+            "name": "name",
+            "address": "15.2.5.45",
+            "peripherals": [
+                {
+                "vendor": "vendor 1",
+                "status": "OFFLINE"
+                }
+            ]
+        }
 
-##### ![Update gateway](/docs/put_gateways.png)
+![Create gateway with peripherals](/docs/post_gateways_with_peripherals.png)
 
-Request
 
-    PUT http://localhost:8080/api/gateways
+- Update gateway
 
-Request body:
+        PUT http://localhost:8080/api/gateways
 
-    {
-        "id": {gatewayId} 
-        "serialNumber": "ssss",
-        "name": "updatedName",
-        "address": "15.2.5.45"
-    }
+        Request body:
+        {
+            "id": {gatewayId}
+            "serialNumber": "ssss",
+            "name": "updatedName",
+            "address": "15.2.5.45"
+        }
 
-##### ![Delete gateway](/docs/delete_gateways.png)
+![Update gateway](/docs/put_gateways.png)
 
-    DELETE http://localhost:8080/api/gateways/{gatewayId}
+-Delete gateway
 
-#### Peripherals
-##### ![Get all peripherals](/docs/get_peripherals.png)
+        DELETE http://localhost:8080/api/gateways/{gatewayId}
 
-Request
+![Delete gateway](/docs/delete_gateways.png)
 
-    GET http://localhost:8080/api/peripherals
 
-##### ![![Create peripheral](/docs/post_peripherals.png)
 
-Request
+### Peripherals
+- Get all peripherals
 
-    POST http://localhost:8080/api/peripherals
+        GET http://localhost:8080/api/peripherals
 
-Request body:
+![Get all peripherals](/docs/get_peripherals.png)
 
-    {
-        "vendor": "ssss",
-        "status": "ONLINE"
-    }
-##### ![![Update peripheral](/docs/put_peripherals.png)
+- Create peripheral
 
-Request
+        POST http://localhost:8080/api/peripherals
 
-    PUT http://localhost:8080/api/peripherals
+        Request body:
+        {
+            "vendor": "ssss",
+            "status": "ONLINE"
+        }
 
-Request body:
+![Create peripheral](/docs/post_peripherals.png)
 
-    {
-        "id": {peripheralId} 
-        "vendor": "ssss",
-        "status": "ONLINE"
-    }
-##### ![Delete peripheral](/docs/delete_peripherals.png)
+- Update peripheral
 
-Request
+        PUT http://localhost:8080/api/peripherals
+        {
+            "id": {peripheralId} 
+            "vendor": "ssss",
+            "status": "ONLINE"
+        }
 
-    DELETE http://localhost:8080/api/peripherals
+![Update peripheral](/docs/put_peripherals.png)
+
+
+- Delete peripheral
+
+        DELETE http://localhost:8080/api/peripherals
+
+![Delete peripheral](/docs/delete_peripherals.png)
