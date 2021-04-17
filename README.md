@@ -22,7 +22,7 @@ Open a terminal and get to the extracted folder and run:
 
     ./mvnw spring-boot:run
 
-##Testing API with Postman
+## Testing API with Postman
 
 ### Gateways
 
@@ -120,6 +120,6 @@ Open a terminal and get to the extracted folder and run:
 
 - Delete peripheral
 
-        DELETE http://localhost:8080/api/peripherals
+        DELETE http://localhost:8080/api/peripherals/{peripheralId}
 
 ![Delete peripheral](/docs/delete_peripherals.png)
