@@ -22,7 +22,7 @@ Open a terminal and get to the extracted folder and run:
 
     ./mvnw spring-boot:run
 
-##Testing API with Postman
+## Testing API with Postman
 
 ### Gateways
 
